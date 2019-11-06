@@ -118,11 +118,11 @@ public class SeleniumApplication {
 		// Gender = male
 		WebElement genderMaleElement;
 		try {
-			genderMaleElement = webDriver.findElement(By.xpath("//*[@id=\"u_0_7\"]"));
-		} catch (final NoSuchElementException e) {
-			LOGGER.warning("Failed to get gender by using numeric ID");
 			genderMaleElement = webDriver.findElement(By.xpath("//*[@id=\"u_0_a\"]"));
-			LOGGER.info("Trying alphabetic ID works");
+		} catch (final NoSuchElementException e) {
+			LOGGER.warning("Failed to get gender by using alphabetic ID");
+			genderMaleElement = webDriver.findElement(By.xpath("//*[@id=\"u_0_7\"]"));
+			LOGGER.info("Trying numeric ID works");
 		}
 		genderMaleElement.click();
 		LOGGER.info("Gender chosen");
