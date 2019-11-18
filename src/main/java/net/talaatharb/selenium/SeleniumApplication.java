@@ -1,5 +1,6 @@
 package net.talaatharb.selenium;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,9 +19,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class SeleniumApplication {
 
 	/**
-	 * Wait time between actions
+	 * Logger
 	 */
-	private static final int WAIT_TIME = 750;
+	private static final Logger LOGGER = Logger.getLogger(SeleniumApplication.class.getName());
+
+	/**
+	 * Maximum wait time
+	 */
+	private static final long MAX_WAIT_TIME = 3;
 
 	/**
 	 * Site URL to enter
@@ -28,9 +34,9 @@ public class SeleniumApplication {
 	private static final String SITE_URL = "https://www.facebook.com";
 
 	/**
-	 * Logger
+	 * How long to wait before application termination
 	 */
-	private static final Logger LOGGER = Logger.getLogger(SeleniumApplication.class.getName());
+	private static final long TERMINATION_DELAY = 6000;
 
 	/**
 	 * Main application entry point
@@ -38,7 +44,7 @@ public class SeleniumApplication {
 	 * @param args The arguments to the application
 	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 
 		// Configure logger
 		LOGGER.setLevel(Level.INFO);
@@ -49,51 +55,48 @@ public class SeleniumApplication {
 		final WebDriver webDriver = new ChromeDriver();
 		LOGGER.info("Web driver created");
 
+		// Setting implicit wait instead of sleep
+		webDriver.manage().timeouts().implicitlyWait(MAX_WAIT_TIME, TimeUnit.SECONDS);
+		LOGGER.info("Web driver implicit wait set to " + MAX_WAIT_TIME + "s");
+
 		// Opening web site
 		webDriver.get(SITE_URL);
 		LOGGER.info("Site: \"" + SITE_URL + "\" is open");
 
 		webDriver.manage().window().maximize();
 		LOGGER.info("Window maximized");
-		Thread.sleep(WAIT_TIME);
 
 		// Filling form details
 		// First name
 		final WebElement firstNameElement = webDriver.findElement(By.id("u_0_f"));
 		firstNameElement.sendKeys("Test");
 		LOGGER.info("First name entered");
-		Thread.sleep(WAIT_TIME);
 
 		// Last name
 		final WebElement lastNameElement = webDriver.findElement(By.id("u_0_h"));
 		lastNameElement.sendKeys("Test");
 		LOGGER.info("Last name entered");
-		Thread.sleep(WAIT_TIME);
 
 		// Email
 		final WebElement emailElement = webDriver.findElement(By.id("u_0_k"));
 		emailElement.sendKeys("Test@test.com");
 		LOGGER.info("Email entered");
-		Thread.sleep(WAIT_TIME);
 
 		// Repeated Email
 		final WebElement repeatedEmailElement = webDriver.findElement(By.id("u_0_n"));
 		repeatedEmailElement.sendKeys("Test@test.com");
 		LOGGER.info("Repeated email entered");
-		Thread.sleep(WAIT_TIME);
 
 		// Password
 		final WebElement passwordElement = webDriver.findElement(By.id("u_0_p"));
 		passwordElement.sendKeys("Test");
 		LOGGER.info("Password entered");
-		Thread.sleep(WAIT_TIME);
 
 		// Month
 		final WebElement monthElement = webDriver.findElement(By.xpath("//*[@id=\"month\"]"));
 		monthElement.click();
 		monthElement.sendKeys("jjj");
 		LOGGER.info("Month chosen");
-		Thread.sleep(WAIT_TIME);
 		monthElement.click();
 
 		// Day
@@ -101,7 +104,6 @@ public class SeleniumApplication {
 		dayElement.click();
 		dayElement.sendKeys("7");
 		LOGGER.info("Day chosen");
-		Thread.sleep(WAIT_TIME);
 		dayElement.click();
 
 		// Year
@@ -113,7 +115,6 @@ public class SeleniumApplication {
 		yearElement.sendKeys("111111111111");
 		LOGGER.info("Year chosen");
 		yearElement.click();
-		Thread.sleep(WAIT_TIME);
 
 		// Gender = male
 		WebElement genderMaleElement;
@@ -126,13 +127,18 @@ public class SeleniumApplication {
 		}
 		genderMaleElement.click();
 		LOGGER.info("Gender chosen");
-		Thread.sleep(WAIT_TIME);
 
 		// Sign up button
 		final WebElement signUpElement = webDriver.findElement(By.id("u_0_w"));
 		signUpElement.click();
 		LOGGER.info("Sign up clicked");
-		Thread.sleep(3000);
+
+		try {
+			Thread.sleep(TERMINATION_DELAY);
+		} catch (InterruptedException e) {
+			LOGGER.warning(e.getMessage());
+			Thread.currentThread().interrupt();
+		}
 
 		// Quitting
 		webDriver.quit();
